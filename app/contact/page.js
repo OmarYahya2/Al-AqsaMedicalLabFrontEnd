@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { MapPin, Phone, Mail, Clock, Calendar, MessageSquare, NavigationIcon, Building, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
-import { sendContactMessage } from "@/lib/api"
-import APIStatus from "@/components/api-status"
-import ContactTest from "@/components/contact-test"
+import { MapPin, Phone, Mail, Clock, MessageSquare, Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +21,7 @@ export default function ContactPage() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState(null) // 'success', 'error', null
+  const [submitStatus, setSubmitStatus] = useState(null)
 
   const handleInputChange = (e) => {
     const { id, value } = e.target
@@ -40,7 +37,24 @@ export default function ContactPage() {
     setSubmitStatus(null)
 
     try {
-      const response = await sendContactMessage(formData)
+      console.log('Sending data:', formData)
+      
+      const response = await fetch('https://al-aqsabackend-uokt.onrender.com/api/contact/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      console.log('Response status:', response.status)
+      const data = await response.json()
+      console.log('Response data:', data)
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'حدث خطأ في إرسال الرسالة')
+      }
+
       setSubmitStatus('success')
       
       // Reset form after successful submission
@@ -59,8 +73,8 @@ export default function ContactPage() {
       }, 5000)
 
     } catch (error) {
+      console.error('Error:', error)
       setSubmitStatus('error')
-      console.error('Error submitting form:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -111,10 +125,6 @@ export default function ContactPage() {
                           <br />
                           غزة، فلسطين
                         </p>
-                        <Button variant="outline" size="sm" className="mt-3 bg-transparent">
-                          <NavigationIcon className="w-4 h-4 mr-2" />
-                          عرض على الخريطة
-                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -129,10 +139,6 @@ export default function ContactPage() {
                         <h3 className="font-semibold text-foreground mb-2">الهاتف</h3>
                         <p className="text-muted-foreground mb-2">+970 123 456 789</p>
                         <p className="text-muted-foreground mb-2">+970 987 654 321</p>
-                        <Button variant="outline" size="sm">
-                          <Phone className="w-4 h-4 mr-2" />
-                          اتصل الآن
-                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -147,10 +153,6 @@ export default function ContactPage() {
                         <h3 className="font-semibold text-foreground mb-2">البريد الإلكتروني</h3>
                         <p className="text-muted-foreground mb-2">info@alaqsamedical.com</p>
                         <p className="text-muted-foreground mb-2">results@alaqsamedical.com</p>
-                        <Button variant="outline" size="sm">
-                          <Mail className="w-4 h-4 mr-2" />
-                          أرسل رسالة
-                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -184,14 +186,27 @@ export default function ContactPage() {
                     {submitStatus === 'success' && (
                       <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
                         <CheckCircle className="w-5 h-5 text-green-600" />
-                        <p className="text-green-800">تم إرسال رسالتك بنجاح! سنرد عليك في أقرب وقت ممكن.</p>
+                        <div>
+                          <p className="text-green-800 font-semibold">تم إرسال رسالتك بنجاح! 🎉</p>
+                          <p className="text-green-700 text-sm">يمكنك الآن الذهاب إلى Django Admin لرؤية الرسالة</p>
+                          <a 
+                            href="https://al-aqsabackend-uokt.onrender.com/admin/" 
+                            target="_blank" 
+                            className="text-green-600 underline hover:text-green-800"
+                          >
+                            رابط Django Admin
+                          </a>
+                        </div>
                       </div>
                     )}
 
                     {submitStatus === 'error' && (
                       <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
                         <AlertCircle className="w-5 h-5 text-red-600" />
-                        <p className="text-red-800">حدث خطأ في إرسال الرسالة. يرجى المحاولة مرة أخرى.</p>
+                        <div>
+                          <p className="text-red-800 font-semibold">حدث خطأ في إرسال الرسالة</p>
+                          <p className="text-red-700 text-sm">يرجى المحاولة مرة أخرى</p>
+                        </div>
                       </div>
                     )}
 
@@ -288,54 +303,29 @@ export default function ContactPage() {
                       </Button>
                     </form>
 
-                    {/* API Status Component */}
-                    <div className="mt-8 pt-6 border-t border-border">
-                      <APIStatus />
+                    {/* Instructions */}
+                    <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 mb-2">تعليمات:</h4>
+                      <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                        <li>املأ النموذج بالبيانات المطلوبة</li>
+                        <li>اضغط على "إرسال الرسالة"</li>
+                        <li>انتظر رسالة النجاح</li>
+                        <li>اذهب إلى Django Admin لرؤية الرسالة</li>
+                      </ol>
+                      <div className="mt-3">
+                        <strong>رابط Django Admin:</strong>
+                        <a 
+                          href="https://al-aqsabackend-uokt.onrender.com/admin/" 
+                          target="_blank" 
+                          className="text-blue-600 underline hover:text-blue-800 mr-2"
+                        >
+                          https://al-aqsabackend-uokt.onrender.com/admin/
+                        </a>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Test Section */}
-        <section className="py-20 bg-muted/50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-foreground mb-6">اختبار النموذج</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                استخدم هذا النموذج لاختبار الاتصال مع الخادم والتأكد من أن البيانات تُحفظ في قاعدة البيانات
-              </p>
-            </div>
-            
-            <ContactTest />
-          </div>
-        </section>
-
-        {/* Map Section */}
-        <section className="py-20 bg-card">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-foreground mb-6">موقعنا</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                يمكنك العثور علينا بسهولة في قلب مدينة غزة، بجانب مستشفى الشفاء
-              </p>
-            </div>
-            
-            <div className="bg-muted rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Building className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-4">مختبر الأقصى الطبي</h3>
-              <p className="text-muted-foreground mb-6">
-                شارع الجلاء، بجانب مستشفى الشفاء<br />
-                غزة، فلسطين
-              </p>
-              <Button variant="outline" className="bg-transparent">
-                <MapPin className="w-4 h-4 mr-2" />
-                عرض على الخريطة
-              </Button>
             </div>
           </div>
         </section>
