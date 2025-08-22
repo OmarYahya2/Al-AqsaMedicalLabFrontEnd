@@ -39,7 +39,7 @@ export default function ContactPage() {
     try {
       console.log('Sending data:', formData)
       
-      const response = await fetch('https://al-aqsabackend-uokt.onrender.com/api/contact/', {
+      const response = await fetch('https://al-aqsabackend-1-pv0k.onrender.com/api/contact/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ export default function ContactPage() {
                           <p className="text-green-800 font-semibold">تم إرسال رسالتك بنجاح! 🎉</p>
                           <p className="text-green-700 text-sm">يمكنك الآن الذهاب إلى Django Admin لرؤية الرسالة</p>
                           <a 
-                            href="https://al-aqsabackend-uokt.onrender.com/admin/" 
+                            href="https://al-aqsabackend-1-pv0k.onrender.com/admin/" 
                             target="_blank" 
                             className="text-green-600 underline hover:text-green-800"
                           >
@@ -315,11 +315,11 @@ export default function ContactPage() {
                       <div className="mt-3">
                         <strong>رابط Django Admin:</strong>
                         <a 
-                          href="https://al-aqsabackend-uokt.onrender.com/admin/" 
+                          href="https://al-aqsabackend-1-pv0k.onrender.com/admin/" 
                           target="_blank" 
                           className="text-blue-600 underline hover:text-blue-800 mr-2"
                         >
-                          https://al-aqsabackend-uokt.onrender.com/admin/
+                          https://al-aqsabackend-1-pv0k.onrender.com/admin/
                         </a>
                       </div>
                     </div>
