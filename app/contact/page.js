@@ -188,13 +188,6 @@ export default function ContactPage() {
                         <CheckCircle className="w-5 h-5 text-green-600" />
                         <div>
                           <p className="text-green-800 font-semibold">تم إرسال رسالتك بنجاح! 🎉</p>
-                          <a 
-                            href="https://al-aqsabackend-1-pv0k.onrender.com/admin/" 
-                            target="_blank" 
-                            className="text-green-600 underline hover:text-green-800"
-                          >
-                            رابط Django Admin
-                          </a>
                         </div>
                       </div>
                     )}
