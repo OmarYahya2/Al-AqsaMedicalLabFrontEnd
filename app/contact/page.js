@@ -302,27 +302,6 @@ export default function ContactPage() {
                         )}
                       </Button>
                     </form>
-
-                    {/* Instructions */}
-                    <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <h4 className="font-semibold text-blue-800 mb-2">تعليمات:</h4>
-                      <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                        <li>املأ النموذج بالبيانات المطلوبة</li>
-                        <li>اضغط على "إرسال الرسالة"</li>
-                        <li>انتظر رسالة النجاح</li>
-                        <li>اذهب إلى Django Admin لرؤية الرسالة</li>
-                      </ol>
-                      <div className="mt-3">
-                        <strong>رابط Django Admin:</strong>
-                        <a 
-                          href="https://al-aqsabackend-1-pv0k.onrender.com/admin/" 
-                          target="_blank" 
-                          className="text-blue-600 underline hover:text-blue-800 mr-2"
-                        >
-                          https://al-aqsabackend-1-pv0k.onrender.com/admin/
-                        </a>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
