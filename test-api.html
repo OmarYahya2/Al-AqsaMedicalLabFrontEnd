@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار API - مختبر الأقصى الطبي</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #374151;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        .error {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        .info {
+            background-color: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status.online { background-color: #10b981; color: white; }
+        .status.offline { background-color: #ef4444; color: white; }
+        .status.checking { background-color: #f59e0b; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 اختبار API - مختبر الأقصى الطبي</h1>
+        
+        <div class="form-group">
+            <h3>🔗 حالة الاتصال</h3>
+            <button onclick="testConnection()">اختبار الاتصال</button>
+            <button onclick="getAPIInfo()">معلومات API</button>
+            <span id="connectionStatus" class="status checking">جاري الفحص...</span>
+        </div>
+
+        <hr style="margin: 30px 0;">
+
+        <div class="form-group">
+            <h3>📧 نموذج الاتصال</h3>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="first_name">الاسم الأول *</label>
+                    <input type="text" id="first_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">اسم العائلة *</label>
+                    <input type="text" id="last_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني *</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="tel" id="phone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">الموضوع *</label>
+                    <input type="text" id="subject" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">الرسالة *</label>
+                    <textarea id="message" required></textarea>
+                </div>
+                
+                <button type="submit" id="submitBtn">إرسال الرسالة</button>
+            </form>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://al-aqsabackend-uokt.onrender.com/api';
+        
+        // اختبار الاتصال
+        async function testConnection() {
+            updateStatus('checking');
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact/`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    updateStatus('online');
+                    showResult('✅ الاتصال ناجح!\n\n' + JSON.stringify(data, null, 2), 'success');
+                } else {
+                    updateStatus('offline');
+                    showResult('❌ فشل الاتصال\n\n' + JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                updateStatus('offline');
+                showResult('❌ خطأ في الاتصال: ' + error.message, 'error');
+            }
+        }
+
+        // الحصول على معلومات API
+        async function getAPIInfo() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/info/`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('📋 معلومات API:\n\n' + JSON.stringify(data, null, 2), 'info');
+                } else {
+                    showResult('❌ فشل في الحصول على المعلومات', 'error');
+                }
+            } catch (error) {
+                showResult('❌ خطأ في الاتصال: ' + error.message, 'error');
+            }
+        }
+
+        // إرسال نموذج الاتصال
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الإرسال...';
+            
+            const formData = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResult('✅ تم إرسال الرسالة بنجاح!\n\n' + JSON.stringify(data, null, 2), 'success');
+                    document.getElementById('contactForm').reset();
+                } else {
+                    showResult('❌ فشل في إرسال الرسالة\n\n' + JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                showResult('❌ خطأ في الاتصال: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // تحديث حالة الاتصال
+        function updateStatus(status) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = `status ${status}`;
+            
+            switch(status) {
+                case 'online':
+                    statusElement.textContent = 'متصل';
+                    break;
+                case 'offline':
+                    statusElement.textContent = 'غير متصل';
+                    break;
+                case 'checking':
+                    statusElement.textContent = 'جاري الفحص...';
+                    break;
+            }
+        }
+
+        // عرض النتائج
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+        }
+
+        // اختبار الاتصال عند تحميل الصفحة
+        window.addEventListener('load', testConnection);
+    </script>
+</body>
+</html>
